@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Fitness Personalizado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-50 min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg mb-8">
+            <div class="bg-green-800 text-white p-6 rounded-t-lg">
+                <h1 class="text-2xl font-bold">Plan Personalizado de Fitness y Nutrición</h1>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="number" id="edad" placeholder="Edad" class="border p-2 rounded-md">
+                    <input type="number" id="peso" placeholder="Peso (kg)" class="border p-2 rounded-md">
+                    <select id="genero" class="border p-2 rounded-md">
+                        <option value="">Selecciona género</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="femenino">Femenino</option>
+                    </select>
+                    <select id="objetivo" class="border p-2 rounded-md">
+                        <option value="">Selecciona objetivo</option>
+                        <option value="perdida">Pérdida de grasa</option>
+                        <option value="ganancia">Ganancia muscular</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                    </select>
+                    <select id="actividad" class="border p-2 rounded-md">
+                        <option value="">Nivel de actividad</option>
+                        <option value="sedentario">Sedentario</option>
+                        <option value="ligero">Ligero</option>
+                        <option value="moderado">Moderado</option>
+                        <option value="intenso">Intenso</option>
+                    </select>
+                    <input type="text" id="deporte" placeholder="Deporte que practicas" class="border p-2 rounded-md">
+                </div>
+                <button onclick="calcularPlan()" class="mt-6 w-full bg-green-800 hover:bg-green-700 text-white py-2 px-4 rounded">
+                    Obtener Plan Personalizado
+                </button>
+            </div>
+        </div>
+
+        <div id="resultados" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-lg">
+                    <div class="bg-green-800 text-white p-4 rounded-t-lg">
+                        <h2 class="text-xl font-bold">Entrenamiento</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="plan-entrenamiento"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg">
+                    <div class="bg-green-800 text-white p-4 rounded-t-lg">
+                        <h2 class="text-xl font-bold">Nutrición</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="plan-nutricion"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg md:col-span-2">
+                    <div class="bg-green-800 text-white p-4 rounded-t-lg">
+                        <h2 class="text-xl font-bold">Recomendaciones Adicionales</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="recomendaciones-adicionales"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calcularPlan() {
+            const edad = parseInt(document.getElementById('edad').value);
+            const peso = parseInt(document.getElementById('peso').value);
+            const genero = document.getElementById('genero').value;
+            const objetivo = document.getElementById('objetivo').value;
+            const actividad = document.getElementById('actividad').value;
+
+            // Validación básica
+            if (!edad || !peso || !genero || !objetivo || !actividad) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            // Cálculo de calorías base
+            let calorias = genero === 'masculino' 
+                ? (10 * peso + 625)
+                : (10 * peso + 500);
+
+            // Ajuste por actividad
+            const factoresActividad = {
+                sedentario: 1.2,
+                ligero: 1.375,
+                moderado: 1.55,
+                intenso: 1.725
+            };
+            calorias *= factoresActividad[actividad];
+
+            // Ajuste por objetivo
+            if (objetivo === 'perdida') {
+                calorias -= edad < 18 ? 100 : 500;
+            } else if (objetivo === 'ganancia') {
+                calorias += 300;
+            }
+
+            // Mostrar resultados
+            document.getElementById('resultados').classList.remove('hidden');
+
+            // Plan de entrenamiento
+            const entrenamientos = {
+                perdida: `
+                    <p class="font-bold mb-4">Calorías diarias: ${Math.round(calorias)}</p>
+                    <h4 class="font-semibold">Cardio</h4>
+                    <ul class="list-disc pl-5 mb-4">
+                        <li>30 minutos de HIIT</li>
+                        <li>45 minutos de cardio en ayunas</li>
+                        <li>Circuito de ejercicios</li>
+                    </ul>
+                    <h4 class="font-semibold">Pesas</h4>
+                    <ul class="list-disc pl-5">
+                        <li>Rutina full body 3 veces por semana</li>
+                        <li>Superseries</li>
+                        <li>Circuito con pesos ligeros</li>
+                    </ul>
+                `,
+                ganancia: `
+                    <p class="font-bold mb-4">Calorías diarias: ${Math.round(calorias)}</p>
+                    <h4 class="font-semibold">Pesas</h4>
+                    <ul class="list-disc pl-5 mb-4">
+                        <li>Push/Pull/Legs</li>
+                        <li>Rutina de fuerza 5x5</li>
+                        <li>Ejercicios compuestos pesados</li>
+                    </ul>
+                    <h4 class="font-semibold">Cardio moderado</h4>
+                    <ul class="list-disc pl-5">
+                        <li>20 minutos de caminata</li>
+                        <li>Bicicleta suave</li>
+                    </ul>
+                `,
+                mantenimiento: `
+                    <p class="font-bold mb-4">Calorías diarias: ${Math.round(calorias)}</p>
+                    <h4 class="font-semibold">Entrenamiento mixto</h4>
+                    <ul class="list-disc pl-5">
+                        <li>Combinación de pesas y cardio</li>
+                        <li>Deportes recreativos</li>
+                        <li>Yoga/Pilates</li>
+                    </ul>
+                `
+            };
+
+            // Plan de nutrición
+            const nutricion = {
+                perdida: `
+                    <ul class="space-y-4">
+                        <li class="border-b pb-2">Desayuno: Avena con proteína y frutas</li>
+                        <li class="border-b pb-2">Almuerzo: Pechuga de pollo con ensalada y quinoa</li>
+                        <li class="border-b pb-2">Cena: Pescado al horno con vegetales</li>
+                        <li class="border-b pb-2">Snacks: Frutas y frutos secos</li>
+                    </ul>
+                `,
+                ganancia: `
+                    <ul class="space-y-4">
+                        <li class="border-b pb-2">Desayuno: Huevos revueltos con avena y plátano</li>
+                        <li class="border-b pb-2">Almuerzo: Arroz integral con carne y legumbres</li>
+                        <li class="border-b pb-2">Cena: Pasta integral con pavo y verduras</li>
+                        <li class="border-b pb-2">Snacks: Batido de proteínas con mantequilla de maní</li>
+                    </ul>
+                `,
+                mantenimiento: `
+                    <ul class="space-y-4">
+                        <li class="border-b pb-2">Desayuno: Tostadas integrales con huevo y aguacate</li>
+                        <li class="border-b pb-2">Almuerzo: Bowl de arroz con proteína y vegetales</li>
+                        <li class="border-b pb-2">Cena: Wrap de pavo con vegetales</li>
+                        <li class="border-b pb-2">Snacks: Yogur con frutas</li>
+                    </ul>
+                `
+            };
+
+            // Recomendaciones adicionales
+            const recomendaciones = `
+                <p class="font-bold mb-4">Horas de sueño recomendadas: ${edad < 18 ? "8-10" : "7-9"} horas</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Mantén un registro diario de tus comidas y entrenamientos</li>
+                    <li>Hidratación: Bebe al menos 2-3 litros de agua al día</li>
+                    <li>Considera suplementos básicos como proteína y multivitamínicos</li>
+                    <li>Realiza estiramientos después de cada entrenamiento</li>
+                    <li>Toma descansos activos entre series de ejercicios</li>
+                </ul>
+            `;
+
+            document.getElementById('plan-entrenamiento').innerHTML = entrenamientos[objetivo];
+            document.getElementById('plan-nutricion').innerHTML = nutricion[objetivo];
+            document.getElementById('recomendaciones-adicionales').innerHTML = recomendaciones;
+        }
+    </script>
+</body>
+</html>
